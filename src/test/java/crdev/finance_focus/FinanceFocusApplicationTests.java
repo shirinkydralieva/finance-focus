@@ -1,0 +1,13 @@
+package crdev.finance_focus;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class FinanceFocusApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
