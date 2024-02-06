@@ -10,36 +10,36 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
-    private final UserService userService;
+    private final UserService service;
 
     @PostMapping("/register")
     public String register(@RequestBody UserDto model){
-       return userService.register(model);
+       return service.register(model);
     }
 
     @GetMapping("/login")
     public String logIn(@RequestBody UserDto model){
-        return userService.logIn(model);
+        return service.logIn(model);
     }
 
     @GetMapping("/login/home")
     public String userHome(@RequestBody UserDto model){
-        return userService.userHome(model);
+        return service.userHome(model);
     }
 
     @PutMapping("/newUsername")
     public String updateUserByUsername(@RequestParam String newUsername, @RequestBody UserDto model){
-        return userService.updateUserByUsername(newUsername, model);
+        return service.updateUserByUsername(newUsername, model);
     }
 
     @PutMapping("/newPassword")
     public String updateUserByPassword(@RequestParam String newPassword, @RequestBody UserDto model){
-        return userService.updateUserByPassword(newPassword, model);
+        return service.updateUserByPassword(newPassword, model);
     }
 
     @DeleteMapping("/delete")
     public String deleteUser(@RequestBody UserDto model){
-        return userService.deleteUser(model);
+        return service.deleteUser(model);
     }
 
 }

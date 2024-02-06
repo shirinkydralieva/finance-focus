@@ -21,4 +21,13 @@ public class Expense {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    @Override
+    public String toString() {
+        return "{id: " + Id +
+                ", category: " + category +
+                ", amount: " + amount +
+                ", message: " + message +
+                ", date: " + date + "}";
+    }
 }

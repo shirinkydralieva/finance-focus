@@ -26,7 +26,7 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    public String createAccount(AccountDto model, Long userId){
+    public String create(AccountDto model, Long userId){
         if (save(model, userId) != -1L){
             return "Account created!";
         } else {
@@ -34,27 +34,17 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    public String accountInfo(AccountDto model, Long userId){
+    public String info(AccountDto model, Long userId){
         try {
             Account account = accountRepo.findAccountByNameAndUserId(model.getName(), userId);
-            return "Account name: " + account.getName() +
-                    "\nAccount type: " + account.getType() +
-                    "\nAccount balance: " + account.getBalance() +
-                    "\nAccount incomes: " + account.getIncomes() +
-                    "\nAccount expenses: " + account.getExpenses();
+            return "- Account information -" +
+                    "\nname: " + account.getName() +
+                    "\ntype: " + account.getType() +
+                    "\nbalance: " + account.getBalance() +
+                    "\nincomes: " + account.getIncomes() +
+                    "\nexpenses: " + account.getExpenses();
         } catch (NullPointerException e){
             return "Account not found!";
-        }
-    }
-
-    public String updateBalance(Long userId, Double newBalance,AccountDto model){
-        try{
-            Account account = accountRepo.findAccountByNameAndUserId(model.getName(), userId);
-            account.setBalance(newBalance);
-            accountRepo.save(account);
-            return "Balance updated!" + "\nYour new balance is: " + account.getBalance();
-        } catch (NullPointerException e){
-            return "Account is not found!";
         }
     }
 
@@ -72,7 +62,7 @@ public class AccountServiceImpl implements AccountService {
     public String updateType(Long userId, String newType,AccountDto model){
         try{
             Account account = accountRepo.findAccountByNameAndUserId(model.getName(), userId);
-            account.setName(newType);
+            account.setType(newType);
             accountRepo.save(account);
             return "Name updated!" + "\nAccount's new type is: " + account.getType();
         } catch (NullPointerException e){
@@ -80,7 +70,18 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    public String deleteAccount(Long userId, AccountDto model){
+    public String updateBalance(Long userId, Double newBalance,AccountDto model){
+        try{
+            Account account = accountRepo.findAccountByNameAndUserId(model.getName(), userId);
+            account.setBalance(newBalance);
+            accountRepo.save(account);
+            return "Balance updated!" + "\nYour new balance is: " + account.getBalance();
+        } catch (NullPointerException e){
+            return "Account is not found!";
+        }
+    }
+
+    public String delete(Long userId, AccountDto model){
         try {
             Account account = accountRepo.findAccountByNameAndUserId(model.getName(), userId);
             accountRepo.delete(account);
