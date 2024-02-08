@@ -90,4 +90,14 @@ public class AccountServiceImpl implements AccountService {
             return "Account is not found!";
         }
     }
+
+    @Override
+    public Double updateAccountBalanceByExpense(Long accountId, Long expenseId) {
+        return accountRepo.updateAccountBalanceByExpense(accountId, expenseId);
+    }
+
+    @Override
+    public Double updateAccountBalanceByIncome(Long accountId, Long incomeId) {
+        return accountRepo.updateAccountBalanceByIncome(accountId, incomeId);
+    }
 }

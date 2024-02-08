@@ -11,4 +11,7 @@ public interface AccountService {
      String updateType(Long userId, String newType,AccountDto model);
      String updateBalance(Long userId, Double newBalance,AccountDto model);
      String delete(Long userId, AccountDto model);
+
+     Double updateAccountBalanceByExpense(Long accountId, Long expenseId);
+     Double updateAccountBalanceByIncome(Long accountId, Long incomeId);
 }
