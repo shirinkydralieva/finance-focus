@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 
 @Entity
@@ -15,19 +16,23 @@ public class Income {
     private Long Id;
     private String category;
     private Double amount;
-    private String message;
-    private Timestamp date;
+    private String description;
+    private Date date;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    @Column(name = "deleted_date")
+    private Date deletedDate;
 
     @Override
     public String toString() {
         return "id: " + Id +
                 ", category: " + category +
                 ", amount: " + amount +
-                ", message: " + message +
-                ", date: " + date;
+                ", description: " + description +
+                ", date: " + date +
+                ", account: " + account;
     }
 }

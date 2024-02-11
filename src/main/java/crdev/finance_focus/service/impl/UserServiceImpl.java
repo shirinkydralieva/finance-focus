@@ -13,13 +13,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     public void save(UserDto model) {
         User user = new User();
-        if (userRepo.findByUsername(model.getUsername()).getUsername().equals(model.getUsername())){
-            System.out.println("Username has already used!");
-            //проверка на наличие уже существующего username
-        } else {
-        user.setUsername(model.getUsername());
-        user.setPassword(model.getPassword());
-        userRepo.save(user);
+        try {
+            if (userRepo.findByUsername(model.getUsername()).getUsername().equals(model.getUsername())) {
+                System.out.println("Username has already used!");
+                //проверка на наличие уже существующего username
+            }
+        } catch(NullPointerException e) {
+            user.setUsername(model.getUsername());
+            user.setPassword(model.getPassword());
+            userRepo.save(user);
         }
     }
 

@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -11,7 +12,7 @@ public class IncomeDto {
     private Long Id;
     private String category;
     private Double amount;
-    private String message;
-    private Timestamp date;
+    private String description;
+    private Date date;
     private Long accountId;
 }

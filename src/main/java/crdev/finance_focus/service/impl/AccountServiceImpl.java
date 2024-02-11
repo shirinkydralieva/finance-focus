@@ -92,12 +92,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Double updateAccountBalanceByExpense(Long accountId, Long expenseId) {
-        return accountRepo.updateAccountBalanceByExpense(accountId, expenseId);
+    public void updateAccountBalanceByExpense(Long accountId, Long expenseId) {
+        accountRepo.updateAccountBalanceByExpense(accountId, expenseId);
     }
 
     @Override
-    public Double updateAccountBalanceByIncome(Long accountId, Long incomeId) {
-        return accountRepo.updateAccountBalanceByIncome(accountId, incomeId);
+    public void updateAccountBalanceByIncome(Long accountId, Long incomeId) {
+        accountRepo.updateAccountBalanceByIncome(accountId, incomeId);
+    }
+
+    @Override
+    public Account getById(Long id) {
+        return accountRepo.findById(id).get();
     }
 }
