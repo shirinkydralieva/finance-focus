@@ -26,6 +26,13 @@ public class Expense {
     @Column(name = "deleted_date")
     private Date deletedDate;
 
+    @PrePersist
+    protected void onCreate() {
+        if (date == null) {
+            date = new Date(); // Если пользователь не указал дату вручную, то будет установлена текущая дата
+        }
+    }
+
     @Override
     public String toString() {
         return "{id: " + Id +

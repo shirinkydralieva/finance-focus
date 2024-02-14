@@ -10,7 +10,6 @@ import java.util.List;
 public class AccountDto {
     private Long Id;
     private String name;
-    private String type;
     private Double balance;
     private Long userId;
     private List<ExpenseDto> expenses;
@@ -20,7 +19,6 @@ public class AccountDto {
     public String toString() {
         return "account{" +
                 "name: " + name +
-                ", type: " + type +
                 ", balance: " + balance +
                 ", expenses:" + expenses +
                 ", incomes: " + incomes +

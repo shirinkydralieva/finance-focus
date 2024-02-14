@@ -3,17 +3,17 @@ package crdev.finance_focus.service;
 import crdev.finance_focus.dto.UserDto;
 import crdev.finance_focus.entity.User;
 
+import java.util.Optional;
+
 public interface UserService {
-    void save(UserDto model);
+    User save(UserDto model);
 
-    String register (UserDto model);
-    String logIn (UserDto model);
-    String userHome(UserDto model);
+    UserDto register (UserDto model);
+    UserDto logIn (UserDto model);
+    UserDto userToDto(User user);
 
-    String updateUserByUsername(String newUsername, UserDto model);
+    UserDto update(Long id, UserDto model);
 
-    String updateUserByPassword(String newPassword, UserDto model);
-
-    String deleteUser(UserDto model);
-    User findUserById(Long id);
+    String delete(Long id);
+    Optional<User> findById(Long id);
 }

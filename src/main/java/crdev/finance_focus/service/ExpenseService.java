@@ -1,20 +1,19 @@
 package crdev.finance_focus.service;
 
 import crdev.finance_focus.dto.ExpenseDto;
+import crdev.finance_focus.entity.Expense;
 
 import java.util.List;
 
 public interface ExpenseService {
 
-    List<ExpenseDto> getAll();
+    List<ExpenseDto> getAll(Long accountId);
 
-    void save(ExpenseDto model);
-
-    void deleteById(Long id);
+    Expense save(ExpenseDto model);
+    ExpenseDto create(ExpenseDto model);
+    String deleteById(Long id);
     ExpenseDto getById(Long id);
-
-    void updateAmount(Long id, Double newAmount);
-    void updateCategory(Long id, String newCategory);
+    ExpenseDto update(Long id, ExpenseDto model);
 }
 
 

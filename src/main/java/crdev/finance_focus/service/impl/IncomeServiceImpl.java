@@ -1,11 +1,13 @@
 package crdev.finance_focus.service.impl;
 
+import crdev.finance_focus.dto.ExpenseDto;
 import crdev.finance_focus.dto.IncomeDto;
 import crdev.finance_focus.entity.Account;
 import crdev.finance_focus.entity.Income;
 import crdev.finance_focus.repo.IncomeRepo;
 import crdev.finance_focus.service.AccountService;
 import crdev.finance_focus.service.IncomeService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -21,88 +24,118 @@ public class IncomeServiceImpl implements IncomeService {
     private final IncomeRepo repo;
     private final AccountService accountService;
 
+    @Transactional
     @Override
-    public List<IncomeDto> getAll() {
-        List<Income> incomes = repo.findAll();
+    public Income save(IncomeDto model) {
+        Income income = new Income();
+        income.setAmount(model.getAmount());
+        income.setCategory(model.getCategory());
+        income.setDescription(model.getDescription());
+        income.setDate(model.getDate());
+        income.setAccount(accountService.findById(model.getAccountId()).get());
+        accountService.updateAccountBalanceByIncome(model.getAccountId(), income.getId());
+        return repo.save(income);
+    }
+
+    public IncomeDto incomeToDto(Income income) {
+        var model = new IncomeDto();
+        model.setId(income.getId());
+        model.setAmount(income.getAmount());
+        model.setCategory(income.getCategory());
+        model.setDescription(income.getDescription());
+        model.setDate(income.getDate());
+        return model;
+    }
+    @Transactional
+    @Override
+    public IncomeDto create(IncomeDto model) {
+        Account account = accountService.findById(model.getAccountId()).orElse(null);
+        if (account != null) {
+            Income income = save(model);
+            return incomeToDto(income);
+        } else {
+            throw new EntityNotFoundException("Account not found");
+        }
+    }
+
+    @Override
+    public List<IncomeDto> getAll(Long accountId) {
+        List<Income> incomes = repo.getAllByAccountIdAndDeletedDateIsNull(accountId);
         List<IncomeDto> models = new ArrayList<>();
         for (Income income : incomes) {
-            IncomeDto model = new IncomeDto();
-            model.setAmount(income.getAmount());
-            model.setCategory(income.getCategory());
-            model.setDescription(income.getDescription());
-            model.setDate(income.getDate());
-            model.setAccountId(income.getAccount().getId());
-
+            IncomeDto model = incomeToDto(income);
             models.add(model);
         }
         return models;
     }
     @Transactional
     @Override
-    public void save(IncomeDto model) {
-        Income income = new Income();
-        income.setAmount(model.getAmount());
-        income.setCategory(model.getCategory());
-        income.setDescription(model.getDescription());
-        income.setDate(new Date());
-        income.setAccount(accountService.getById(model.getAccountId()));
-        repo.save(income);
-        accountService.updateAccountBalanceByIncome(model.getAccountId(), income.getId());
-    }
-    @Transactional
-    @Override
-    public void deleteById(Long id) {
-        Income income = repo.findById(id).orElse(null);
+    public String deleteById(Long id) {
+        Income income = repo.findByIdAndDeletedDateIsNull(id).orElse(null);
         if (income != null) {
             income.setDeletedDate(new Date());
-
-            Account account = accountService.getById(income.getAccount().getId());
-            if (account.getIncomes().contains(income)) {
-                account.getIncomes().remove(income);
+            Account account = accountService.findById(income.getAccount().getId()).orElse(null);
+            if (account != null) {
+                if (account.getIncomes().contains(income)) {
+                    account.getIncomes().remove(income);
+                }
+                Double newBalance = account.getBalance() - income.getAmount();
+                account.setBalance(newBalance);
+                return "Income deleted!";
+            } else {
+                throw new EntityNotFoundException("Account not found");
             }
-            Double newBalance = account.getBalance() - income.getAmount();
-            account.setBalance(newBalance);
+        } else {
+            throw new EntityNotFoundException("Income not found");
         }
     }
     @Override
     public IncomeDto getById(Long id) {
-        Income income = repo.findById(id).get();
-        var model = new IncomeDto();
-        model.setAmount(income.getAmount());
-        model.setCategory(income.getCategory());
-        model.setDescription(income.getDescription());
-        model.setDate(income.getDate());
-        return model;
-//       return repo.findById(id).orElseThrow(() -> new RuntimeException("Income not found with id: " + id));
+        Income income = repo.findByIdAndDeletedDateIsNull(id).orElse(null);
+        if (income != null) {
+            var model = incomeToDto(income);
+            return model;
+        } else {
+            throw new EntityNotFoundException("Income not found");
+        }
     }
 
     @Transactional
     @Override
-    public void updateAmount(Long id, Double newAmount) {
-        Income income = repo.findById(id).orElse(null);
+    public IncomeDto update(Long id, IncomeDto model) {
+        Income income = repo.findByIdAndDeletedDateIsNull(id).orElse(null);
         if (income != null) {
-            Double oldAmount = income.getAmount();
-            income.setAmount(newAmount);
-            repo.save(income);
-
-            Account account = accountService.getById(income.getAccount().getId());
-            if (account != null) {
-                Double difference = newAmount - oldAmount;
-                Double newBalance = account.getBalance() - difference;
+            Account account = accountService.findById(model.getAccountId()).orElse(null);
+            if (account != null){
+                if (account.getExpenses().contains(income)) {
+                    account.getExpenses().remove(income);
+                }
+                Double newBalance = account.getBalance() - income.getAmount();
+                if (model.getAmount() != null) {
+                    income.setAmount(model.getAmount());
+                    newBalance += model.getAmount();
+                }
+                if (model.getCategory() != null) {
+                    income.setCategory(model.getCategory());
+                }
+                if (model.getDescription() != null) {
+                    income.setDescription(model.getDescription());
+                }
+                if (model.getDate() != null) {
+                    income.setDate(model.getDate());
+                }
                 account.setBalance(newBalance);
+                account.getIncomes().add(income);
+                repo.save(income);
+                return incomeToDto(income);
+            } else {
+                throw new EntityNotFoundException("Account not found");
             }
+        } else {
+            throw new EntityNotFoundException("Income not found");
         }
     }
 
-    @Transactional
-    @Override
-    public void updateCategory(Long id, String newCategory) {
-        Income income = repo.findById(id).orElse(null);
-        if (income != null) {
-            income.setCategory(newCategory);
-            repo.save(income);
-        }
-    }
 }
 
 

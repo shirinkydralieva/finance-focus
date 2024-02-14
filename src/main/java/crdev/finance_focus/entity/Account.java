@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -15,8 +16,9 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long Id;
     private String name;
-    private String type;
     private Double balance;
+    @Column(name = "deleted_date")
+    private Date deletedDate;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -31,7 +33,6 @@ public class Account {
     public String toString() {
         return "{" +
                 "name: " + name +
-                ", type: " + type +
                 ", balance: " + balance +
                 "}";
     }

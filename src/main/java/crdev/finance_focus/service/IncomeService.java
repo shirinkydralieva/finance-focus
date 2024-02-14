@@ -1,20 +1,19 @@
 package crdev.finance_focus.service;
 
 import crdev.finance_focus.dto.IncomeDto;
+import crdev.finance_focus.entity.Income;
 
 import java.util.List;
 
 public interface IncomeService {
 
-    List<IncomeDto> getAll();
+    List<IncomeDto> getAll(Long accountId);
 
-    void save(IncomeDto model);
-
-    void deleteById(Long id);
+    Income save(IncomeDto model);
+    IncomeDto create(IncomeDto model);
+    String deleteById(Long id);
     IncomeDto getById(Long id);
-
-    void updateAmount(Long id, Double newAmount);
-    void updateCategory(Long id, String newCategory);
+    IncomeDto update(Long id, IncomeDto model);
 
 
 }

@@ -14,6 +14,7 @@ public class ExpenseDto {
     private Double amount;
     private String description;
     private Date date;
+    private Date deletedDate;
     private Long accountId;
 
     @Override
