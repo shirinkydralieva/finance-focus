@@ -136,7 +136,7 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}/update")
-    public ResponseMessageAPI<ExpenseDto> updateCategory(@PathVariable Long id,
+    public ResponseMessageAPI<ExpenseDto> update(@PathVariable Long id,
                                                  @RequestBody ExpenseDto model) {
         try { return new ResponseMessageAPI<>(
                 service.update(id, model),

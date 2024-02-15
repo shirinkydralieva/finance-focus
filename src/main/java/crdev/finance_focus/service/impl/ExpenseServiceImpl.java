@@ -30,9 +30,9 @@ public class ExpenseServiceImpl implements ExpenseService {
         expense.setAmount(model.getAmount());
         expense.setCategory(model.getCategory());
         expense.setDescription(model.getDescription());
-        expense.setDate(model.getDate());//в базе данных думаю можно добавить значение по дефолту, в сущности Expense есть метод
+        expense.setDate(model.getDate());
         expense.setAccount(accountService.findById(model.getAccountId()).get());
-        accountService.updateAccountBalanceByExpense(model.getAccountId(), expense.getId());
+        accountService.updateBalanceByExpense(model.getAccountId(), expense.getAmount());
         return repo.save(expense);
     }
 
@@ -43,6 +43,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         model.setCategory(expense.getCategory());
         model.setDescription(expense.getDescription());
         model.setDate(expense.getDate());
+        model.setAccountId(expense.getAccount().getId());
         return model;
     }
 

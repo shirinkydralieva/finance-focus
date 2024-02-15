@@ -69,6 +69,7 @@ public class UserServiceImpl implements UserService {
                 expenseModel.setCategory(expense.getCategory());
                 expenseModel.setDate(expense.getDate());
                 expenseModel.setDescription(expense.getDescription());
+                expenseModel.setAccountId(expense.getAccount().getId());
                 expensesModel.add(expenseModel);
             }
             List<Income> incomes = account.getIncomes();
@@ -80,13 +81,16 @@ public class UserServiceImpl implements UserService {
                 incomeModel.setCategory(income.getCategory());
                 incomeModel.setDate(income.getDate());
                 incomeModel.setDescription(income.getDescription());
+                incomeModel.setAccountId(income.getAccount().getId());
                 incomesModel.add(incomeModel);
             }
+            accountModel.setId(account.getId());
             accountModel.setName(account.getName());
             accountModel.setBalance(account.getBalance());
             accountModel.setExpenses(expensesModel);
             accountModel.setIncomes(incomesModel);
             accountModels.add(accountModel);
+            accountModel.setUserId(account.getUser().getId());
         }
         response.setId(user.getId());
         response.setUsername(user.getUsername());

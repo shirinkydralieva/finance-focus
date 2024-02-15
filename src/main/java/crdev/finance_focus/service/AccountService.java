@@ -13,7 +13,8 @@ public interface AccountService {
      AccountDto update(Long id, AccountDto model);
      String delete(Long id);
      Optional<Account> findById(Long id);
-     void updateAccountBalanceByExpense(Long accountId, Long expenseId);
-     void updateAccountBalanceByIncome(Long accountId, Long incomeId);
      List<AccountDto> getAll(Long userId);
+     AccountDto accountToDto(Account account);
+     void updateBalanceByExpense(Long accountId, Double amount);
+     void updateBalanceByIncome(Long accountId, Double amount);
 }

@@ -37,7 +37,7 @@ public class AccountController {
                     ResultCode.NOT_FOUND.getHttpCode()
             );
         } catch (Exception e) {
-            System.out.printf("UserController: create() %s%n", e);
+            System.out.printf("AccountController: create() %s%n", e);
             return new ResponseMessageAPI<>(
                     null,
                     ResultCodeAPI.EXCEPTION, e.getClass().getSimpleName(),

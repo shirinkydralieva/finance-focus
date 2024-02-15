@@ -37,32 +37,61 @@ public class AccountServiceImpl implements AccountService {
         var response = new AccountDto();
         List<Expense> expenses = account.getExpenses();
         List<ExpenseDto> expensesModel = new ArrayList<>();
-        for (Expense expense : expenses) {
-            ExpenseDto expenseModel = new ExpenseDto();
-            expenseModel.setId(expense.getId());
-            expenseModel.setAmount(expense.getAmount());
-            expenseModel.setCategory(expense.getCategory());
-            expenseModel.setDate(expense.getDate());
-            expenseModel.setDescription(expense.getDescription());
-            expensesModel.add(expenseModel);
+        if (expenses == null){
+            response.setId(account.getId());
+            response.setName(account.getName());
+            response.setBalance(account.getBalance());
+            response.setUserId(account.getUser().getId());
+        } else {
+            for (Expense expense : expenses) {
+                ExpenseDto expenseModel = new ExpenseDto();
+                expenseModel.setId(expense.getId());
+                expenseModel.setAmount(expense.getAmount());
+                expenseModel.setCategory(expense.getCategory());
+                expenseModel.setDate(expense.getDate());
+                expenseModel.setDescription(expense.getDescription());
+                expensesModel.add(expenseModel);
+            }
+            List<Income> incomes = account.getIncomes();
+            List<IncomeDto> incomesModel = new ArrayList<>();
+            for (Income income : incomes) {
+                IncomeDto incomeModel = new IncomeDto();
+                incomeModel.setId(income.getId());
+                incomeModel.setAmount(income.getAmount());
+                incomeModel.setCategory(income.getCategory());
+                incomeModel.setDate(income.getDate());
+                incomeModel.setDescription(income.getDescription());
+                incomesModel.add(incomeModel);
+            }
+            response.setName(account.getName());
+            response.setBalance(account.getBalance());
+            response.setExpenses(expensesModel);
+            response.setIncomes(incomesModel);
+            response.setUserId(account.getUser().getId());
         }
-        List<Income> incomes = account.getIncomes();
-        List<IncomeDto> incomesModel = new ArrayList<>();
-        for (Income income : incomes) {
-            IncomeDto incomeModel = new IncomeDto();
-            incomeModel.setId(income.getId());
-            incomeModel.setAmount(income.getAmount());
-            incomeModel.setCategory(income.getCategory());
-            incomeModel.setDate(income.getDate());
-            incomeModel.setDescription(income.getDescription());
-            incomesModel.add(incomeModel);
-        }
-        response.setName(account.getName());
-        response.setBalance(account.getBalance());
-        response.setExpenses(expensesModel);
-        response.setIncomes(incomesModel);
-        response.setUserId(account.getUser().getId());
         return response;
+    }
+
+    @Override
+    public void updateBalanceByExpense(Long accountId, Double amount) {
+        Account account = findById(accountId).orElse(null);
+        if (account != null){
+            account.setBalance(account.getBalance() - amount);
+            accountRepo.save(account);
+        } else {
+            throw new EntityNotFoundException("Account not found");
+        }
+    }
+
+    @Override
+    public void updateBalanceByIncome(Long accountId, Double amount) {
+        Account account = findById(accountId).orElse(null);
+        if (account != null){
+            account.setBalance(account.getBalance() + amount);
+            accountRepo.save(account);
+        } else {
+            throw new EntityNotFoundException("Account not found");
+        }
     }
 
     public AccountDto create(AccountDto model){
@@ -140,14 +169,5 @@ public class AccountServiceImpl implements AccountService {
         return accountRepo.findAccountByIdAndDeletedDateIsNull(id);
     }
 
-    @Override
-    public void updateAccountBalanceByExpense(Long accountId, Long expenseId) {
-        accountRepo.updateAccountBalanceByExpense(accountId, expenseId);
-    }
-
-    @Override
-    public void updateAccountBalanceByIncome(Long accountId, Long incomeId) {
-        accountRepo.updateAccountBalanceByIncome(accountId, incomeId);
-    }
 
 }

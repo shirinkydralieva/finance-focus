@@ -33,7 +33,7 @@ public class IncomeServiceImpl implements IncomeService {
         income.setDescription(model.getDescription());
         income.setDate(model.getDate());
         income.setAccount(accountService.findById(model.getAccountId()).get());
-        accountService.updateAccountBalanceByIncome(model.getAccountId(), income.getId());
+        accountService.updateBalanceByIncome(model.getAccountId(), income.getAmount());
         return repo.save(income);
     }
 
