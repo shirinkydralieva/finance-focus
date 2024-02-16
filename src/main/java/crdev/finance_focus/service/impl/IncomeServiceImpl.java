@@ -4,6 +4,7 @@ import crdev.finance_focus.dto.ExpenseDto;
 import crdev.finance_focus.dto.IncomeDto;
 import crdev.finance_focus.entity.Account;
 import crdev.finance_focus.entity.Category;
+import crdev.finance_focus.entity.Expense;
 import crdev.finance_focus.entity.Income;
 import crdev.finance_focus.repo.IncomeRepo;
 import crdev.finance_focus.service.AccountService;
@@ -146,6 +147,22 @@ public class IncomeServiceImpl implements IncomeService {
         } else {
             throw new EntityNotFoundException("Income not found");
         }
+    }
+
+    @Override
+    public List<IncomeDto> findByAccountIdAndDateBetween(Long accountId, Date startDate, Date endDate) {
+        Account account = accountService.findById(accountId).orElse(null);
+        List<IncomeDto> incomesModel = new ArrayList<>();
+        if (account != null){
+            List<Income> incomes = repo.findByAccountIdAndDateBetween(accountId, startDate, endDate);
+            for (Income income : incomes){
+                IncomeDto model = incomeToDto(income);
+                incomesModel.add(model);
+            }
+        } else {
+            throw new EntityNotFoundException("Account not found");
+        }
+        return incomesModel;
     }
 
 }

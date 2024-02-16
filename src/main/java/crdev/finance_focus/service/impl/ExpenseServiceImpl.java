@@ -154,6 +154,22 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new EntityNotFoundException("Expense not found");
         }
     }
+
+    @Override
+    public List<ExpenseDto> findByAccountIdAndDateBetween(Long accountId, Date startDate, Date endDate) {
+        Account account = accountService.findById(accountId).orElse(null);
+        List<ExpenseDto> expensesModel = new ArrayList<>();
+        if (account != null){
+            List<Expense> expenses = repo.findByAccountIdAndDateBetween(accountId, startDate, endDate);
+            for (Expense expense: expenses){
+                ExpenseDto model = expenseToDto(expense);
+                expensesModel.add(model);
+            }
+        } else {
+            throw new EntityNotFoundException("Account not found");
+        }
+        return expensesModel;
+    }
 }
 
 

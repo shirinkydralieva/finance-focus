@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Tag(name = "Income", description = "API транзакций доходов пользователя.")
@@ -244,6 +246,54 @@ public class IncomeController {
                     null,
                     ResultCodeAPI.EXCEPTION, e.getClass().getSimpleName(),
                     "Ошибка при обновлении записи дохода пользователя",
+                    ResultCode.FAIL.getHttpCode()
+            );
+        }
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Получены все транзакции доходов пользователя по id счета/кошелька пользователя и по заданному периоду времени",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = IncomeDto.class)))
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Получение всех транзакций доходов пользователя по id счета/кошелька пользователя и заданному периоду времени",
+            description = "Укажите начальную и конечную даты, также id счета/кошелька. Возвращает список транзакций расходов пользователя в формате json."
+    )
+    @GetMapping("/date-range")
+    public ResponseMessageAPI<List<IncomeDto>> findByAccountIdAndDateBetween(@RequestParam Long accountId, @RequestParam String startDate, @RequestParam String endDate){
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date start = formatter.parse(startDate);
+            Date end = formatter.parse(endDate);
+            return new ResponseMessageAPI<>(
+                    service.findByAccountIdAndDateBetween(accountId, start, end),
+                    ResultCodeAPI.SUCCESS,
+                    null,
+                    "success",
+                    ResultCode.OK.getHttpCode()
+            );
+        } catch (EntityNotFoundException exception) {
+            System.out.println(exception.getMessage());
+            return new ResponseMessageAPI<>(
+                    null,
+                    ResultCodeAPI.FAIL,
+                    exception.getClass().getSimpleName(),
+                    exception.getMessage(),
+                    ResultCode.NOT_FOUND.getHttpCode()
+            );
+        } catch (Exception e) {
+            System.out.printf("IncomeController: findByAccountIdAndDateBetween() %s%n", e);
+            return new ResponseMessageAPI<>(
+                    null,
+                    ResultCodeAPI.EXCEPTION, e.getClass().getSimpleName(),
+                    "Ошибка при получении списка доходов пользователя по датам",
                     ResultCode.FAIL.getHttpCode()
             );
         }
