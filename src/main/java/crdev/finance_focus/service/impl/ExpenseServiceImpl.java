@@ -2,9 +2,11 @@ package crdev.finance_focus.service.impl;
 
 import crdev.finance_focus.dto.ExpenseDto;
 import crdev.finance_focus.entity.Account;
+import crdev.finance_focus.entity.Category;
 import crdev.finance_focus.entity.Expense;
 import crdev.finance_focus.repo.ExpenseRepo;
 import crdev.finance_focus.service.AccountService;
+import crdev.finance_focus.service.CategoryService;
 import crdev.finance_focus.service.ExpenseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -22,13 +24,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     private final ExpenseRepo repo;
     private final AccountService accountService;
+    private final CategoryService categoryService;
 
     @Transactional
     @Override
     public Expense save(ExpenseDto model) {
         Expense expense = new Expense();
         expense.setAmount(model.getAmount());
-        expense.setCategory(model.getCategory());
+        expense.setCategory(categoryService.findById(model.getCategoryId()).get());
         expense.setDescription(model.getDescription());
         expense.setDate(model.getDate());
         expense.setAccount(accountService.findById(model.getAccountId()).get());
@@ -40,7 +43,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         var model = new ExpenseDto();
         model.setId(expense.getId());
         model.setAmount(expense.getAmount());
-        model.setCategory(expense.getCategory());
+        model.setCategoryId(expense.getCategory().getId());
         model.setDescription(expense.getDescription());
         model.setDate(expense.getDate());
         model.setAccountId(expense.getAccount().getId());
@@ -50,9 +53,14 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Transactional
     public ExpenseDto create(ExpenseDto model) {
         Account account = accountService.findById(model.getAccountId()).orElse(null);
+        Category category = categoryService.findById(model.getCategoryId()).orElse(null);
         if (account != null) {
-            Expense expense = save(model);
-            return expenseToDto(expense);
+            if (category != null) {
+                Expense expense = save(model);
+                return expenseToDto(expense);
+            } else {
+                throw new EntityNotFoundException("Category not found");
+            }
         } else {
             throw new EntityNotFoundException("Account not found");
         }
@@ -112,7 +120,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public ExpenseDto update(Long id, ExpenseDto model) {
         Expense expense = repo.findByIdAndDeletedDateIsNull(id).orElse(null);
         if (expense != null) {
-            Account account = accountService.findById(model.getAccountId()).orElse(null);
+            Account account = accountService.findById(expense.getAccount().getId()).orElse(null);
             if (account != null){
                 if (account.getExpenses().contains(expense)) {
                     account.getExpenses().remove(expense);
@@ -122,8 +130,12 @@ public class ExpenseServiceImpl implements ExpenseService {
                     expense.setAmount(model.getAmount());
                     newBalance -= model.getAmount();
                 }
-                if (model.getCategory() != null) {
-                    expense.setCategory(model.getCategory());
+                if (model.getCategoryId() != null) {
+                    if (categoryService.findById(model.getCategoryId()).isPresent()) {
+                        expense.setCategory(categoryService.findById(model.getCategoryId()).get());
+                    } else{
+                        throw new EntityNotFoundException("Category not found");
+                    }
                 }
                 if (model.getDescription() != null) {
                     expense.setDescription(model.getDescription());

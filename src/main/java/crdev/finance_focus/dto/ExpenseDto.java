@@ -10,19 +10,11 @@ import java.util.Date;
 @NoArgsConstructor
 public class ExpenseDto {
     private Long Id;
-    private String category;
     private Double amount;
+    private Long categoryId;
     private String description;
     private Date date;
     private Date deletedDate;
     private Long accountId;
 
-    @Override
-    public String toString() {
-        return "id: " + Id +
-                ", category: " + category +
-                ", amount: " + amount +
-                ", description: " + description +
-                ", date: " + date;
-    }
 }

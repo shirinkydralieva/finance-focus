@@ -10,7 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class IncomeDto {
     private Long Id;
-    private String category;
+    private Long categoryId;
     private Double amount;
     private String description;
     private Date date;

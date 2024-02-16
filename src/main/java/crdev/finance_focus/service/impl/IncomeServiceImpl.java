@@ -3,9 +3,11 @@ package crdev.finance_focus.service.impl;
 import crdev.finance_focus.dto.ExpenseDto;
 import crdev.finance_focus.dto.IncomeDto;
 import crdev.finance_focus.entity.Account;
+import crdev.finance_focus.entity.Category;
 import crdev.finance_focus.entity.Income;
 import crdev.finance_focus.repo.IncomeRepo;
 import crdev.finance_focus.service.AccountService;
+import crdev.finance_focus.service.CategoryService;
 import crdev.finance_focus.service.IncomeService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -20,16 +22,16 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 public class IncomeServiceImpl implements IncomeService {
-
     private final IncomeRepo repo;
     private final AccountService accountService;
+    private final CategoryService categoryService;
 
     @Transactional
     @Override
     public Income save(IncomeDto model) {
         Income income = new Income();
         income.setAmount(model.getAmount());
-        income.setCategory(model.getCategory());
+        income.setCategory(categoryService.findById(model.getCategoryId()).get());
         income.setDescription(model.getDescription());
         income.setDate(model.getDate());
         income.setAccount(accountService.findById(model.getAccountId()).get());
@@ -41,7 +43,7 @@ public class IncomeServiceImpl implements IncomeService {
         var model = new IncomeDto();
         model.setId(income.getId());
         model.setAmount(income.getAmount());
-        model.setCategory(income.getCategory());
+        model.setCategoryId(income.getCategory().getId());
         model.setDescription(income.getDescription());
         model.setDate(income.getDate());
         model.setAccountId(income.getAccount().getId());
@@ -51,9 +53,14 @@ public class IncomeServiceImpl implements IncomeService {
     @Override
     public IncomeDto create(IncomeDto model) {
         Account account = accountService.findById(model.getAccountId()).orElse(null);
+        Category category = categoryService.findById(model.getCategoryId()).orElse(null);
         if (account != null) {
-            Income income = save(model);
-            return incomeToDto(income);
+            if (category != null) {
+                Income income = save(model);
+                return incomeToDto(income);
+            } else {
+                throw new EntityNotFoundException("Category not found");
+            }
         } else {
             throw new EntityNotFoundException("Account not found");
         }
@@ -106,7 +113,7 @@ public class IncomeServiceImpl implements IncomeService {
     public IncomeDto update(Long id, IncomeDto model) {
         Income income = repo.findByIdAndDeletedDateIsNull(id).orElse(null);
         if (income != null) {
-            Account account = accountService.findById(model.getAccountId()).orElse(null);
+            Account account = accountService.findById(income.getAccount().getId()).orElse(null);
             if (account != null){
                 if (account.getExpenses().contains(income)) {
                     account.getExpenses().remove(income);
@@ -116,8 +123,12 @@ public class IncomeServiceImpl implements IncomeService {
                     income.setAmount(model.getAmount());
                     newBalance += model.getAmount();
                 }
-                if (model.getCategory() != null) {
-                    income.setCategory(model.getCategory());
+                if (model.getCategoryId() != null) {
+                    if (categoryService.findById(model.getCategoryId()).isPresent()) {
+                        income.setCategory(categoryService.findById(model.getCategoryId()).get());
+                    } else {
+                        throw new EntityNotFoundException("Category not found");
+                    }
                 }
                 if (model.getDescription() != null) {
                     income.setDescription(model.getDescription());

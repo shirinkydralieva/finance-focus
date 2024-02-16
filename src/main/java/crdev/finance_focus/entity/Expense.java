@@ -14,7 +14,6 @@ public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
-    private String category;
     private Double amount;
     private String description;
     private Date date;
@@ -22,6 +21,10 @@ public class Expense {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Column(name = "deleted_date")
     private Date deletedDate;

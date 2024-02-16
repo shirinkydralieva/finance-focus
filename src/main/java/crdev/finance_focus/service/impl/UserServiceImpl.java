@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
                 ExpenseDto expenseModel = new ExpenseDto();
                 expenseModel.setId(expense.getId());
                 expenseModel.setAmount(expense.getAmount());
-                expenseModel.setCategory(expense.getCategory());
+                expenseModel.setCategoryId(expense.getCategory().getId());
                 expenseModel.setDate(expense.getDate());
                 expenseModel.setDescription(expense.getDescription());
                 expenseModel.setAccountId(expense.getAccount().getId());
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
                 IncomeDto incomeModel = new IncomeDto();
                 incomeModel.setId(income.getId());
                 incomeModel.setAmount(income.getAmount());
-                incomeModel.setCategory(income.getCategory());
+                incomeModel.setCategoryId(income.getCategory().getId());
                 incomeModel.setDate(income.getDate());
                 incomeModel.setDescription(income.getDescription());
                 incomeModel.setAccountId(income.getAccount().getId());
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update (Long id, UserDto model){
-        User user = userRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+        User user = userRepo.findByIdAndDeletedDateIsNull(id).orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
         if (model.getUsername() != null){
                 user.setUsername(model.getUsername());
         }
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String delete(Long id){
-        User user = userRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = userRepo.findByIdAndDeletedDateIsNull(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
         user.setDeletedDate(new Date());
         for (Account account : user.getAccounts()) {
             account.setDeletedDate(new Date());
