@@ -44,6 +44,7 @@ public class IncomeServiceImpl implements IncomeService {
         model.setCategory(income.getCategory());
         model.setDescription(income.getDescription());
         model.setDate(income.getDate());
+        model.setAccountId(income.getAccount().getId());
         return model;
     }
     @Transactional

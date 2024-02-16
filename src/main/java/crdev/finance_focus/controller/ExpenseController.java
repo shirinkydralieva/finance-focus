@@ -1,11 +1,19 @@
 package crdev.finance_focus.controller;
 
+import crdev.finance_focus.dto.AccountDto;
 import crdev.finance_focus.dto.ExpenseDto;
 import crdev.finance_focus.dto.ResponseMessageAPI;
 import crdev.finance_focus.enums.ResultCode;
 import crdev.finance_focus.enums.ResultCodeAPI;
 import crdev.finance_focus.service.ExpenseService;
 import crdev.finance_focus.service.impl.ExpenseServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +21,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Expense", description = "API транзакций расходов пользователя.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/expenses")
 public class ExpenseController {
     private final ExpenseService service;
 
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Получены все транзакции расходов пользователя по id счета/кошелька пользователя",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = ExpenseDto.class)))
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Получение всех транзакций расходов пользователя по id счета/кошелька пользователя",
+            description = "Получение всех транзакций расходов пользователя. Возвращает список транзакций расходов пользователя в формате json."
+    )
     @GetMapping()
     public ResponseMessageAPI<List<ExpenseDto>> getAll(@RequestParam Long accountId) {
         try { return new ResponseMessageAPI<>(
@@ -47,7 +71,22 @@ public class ExpenseController {
             );
         }
     }
-
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Транзакция расходов пользователя успешно получена",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExpenseDto.class)
+                            )
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Получение транзакции расходов пользователя по id транзакции",
+            description = "Получение транзакции расходов пользователя по id. Возвращает транзакцию расходов пользователя в формате json."
+    )
     @GetMapping("/{id}")
     public ResponseMessageAPI<ExpenseDto> getById(@PathVariable Long id) {
         try { return new ResponseMessageAPI<>(
@@ -76,7 +115,22 @@ public class ExpenseController {
             );
         }
     }
-
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Транзакция расходов пользователя успешно создана",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExpenseDto.class)
+                            )
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Создание транзакции расходов пользователя",
+            description = "Создание транзакции расходов пользователя. Возвращает созданную транзакцию расходов пользователя в формате json."
+    )
     @PostMapping()
     public ResponseMessageAPI<ExpenseDto> create (@RequestBody ExpenseDto model) {
         try { return new ResponseMessageAPI<>(
@@ -105,7 +159,22 @@ public class ExpenseController {
             );
         }
     }
-
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Транзакция расходов пользователя успешно удалена",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExpenseDto.class)
+                            )
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Удаление транзакции расходов пользователя по id транзакции",
+            description = "Удаление транзакции расходов пользователя по id транзакции. Возвращает сообщение об удаленной транзакции расхода."
+    )
     @DeleteMapping("/delete")
     public ResponseMessageAPI<String> delete(@RequestParam Long id) {
         try { return new ResponseMessageAPI<>(
@@ -135,6 +204,22 @@ public class ExpenseController {
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Транзакция расходов пользователя успешно обновлена",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExpenseDto.class)
+                            )
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Обновление транзакции расхода пользователя по id транзакции",
+            description = "Обновление транзакции расхода пользователя по id. Возвращает обновленную транзакцию расхода пользователя в формате json."
+    )
     @PutMapping("/{id}/update")
     public ResponseMessageAPI<ExpenseDto> update(@PathVariable Long id,
                                                  @RequestBody ExpenseDto model) {

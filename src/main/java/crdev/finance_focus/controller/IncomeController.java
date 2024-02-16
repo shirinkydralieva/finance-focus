@@ -1,11 +1,19 @@
 package crdev.finance_focus.controller;
 
+import crdev.finance_focus.dto.ExpenseDto;
 import crdev.finance_focus.dto.IncomeDto;
 import crdev.finance_focus.dto.ResponseMessageAPI;
 import crdev.finance_focus.enums.ResultCode;
 import crdev.finance_focus.enums.ResultCodeAPI;
 import crdev.finance_focus.service.IncomeService;
 import crdev.finance_focus.service.impl.IncomeServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +21,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Income", description = "API транзакций доходов пользователя.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/incomes")
 public class IncomeController {
     private final IncomeService service;
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Список транзакций доходов пользователя успешно получен",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = IncomeDto.class))
+                            )
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Получение всех транзакций доходов пользователя по id счета/кошелька пользователя",
+            description = "Получение всех транзакций доходов пользователя. Возвращает список транзакций доходов пользователя в формате json."
+    )
     @GetMapping
     public ResponseMessageAPI<List<IncomeDto>> getAll(@RequestParam Long accountId) {
         try { return new ResponseMessageAPI<>(
@@ -46,7 +71,22 @@ public class IncomeController {
             );
         }
     }
-
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Транзакция дохода пользователя успешно получена",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = IncomeDto.class)
+                            )
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Получение транзакции дохода пользователя по id транзакции",
+            description = "Получение транзакции дохода пользователя по id. Возвращает транзакцию дохода пользователя в формате json."
+    )
     @GetMapping("/{id}")
     public ResponseMessageAPI<IncomeDto> getById(@PathVariable Long id) {
         try { return new ResponseMessageAPI<>(
@@ -75,7 +115,22 @@ public class IncomeController {
             );
         }
     }
-
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Транзакция дохода пользователя успешно создана",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = IncomeDto.class)
+                            )
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Создание транзакции дохода пользователя",
+            description = "Создание транзакции дохода пользователя. Возвращает созданную транзакцию дохода пользователя в формате json."
+    )
     @PostMapping
     public ResponseMessageAPI<IncomeDto> create (@RequestBody IncomeDto model) {
         try { return new ResponseMessageAPI<>(
@@ -104,7 +159,22 @@ public class IncomeController {
             );
         }
     }
-
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Транзакция дохода пользователя успешно удалена",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = IncomeDto.class)
+                            )
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Удаление транзакции дохода пользователя по id транзакции",
+            description = "Удаление транзакции дохода пользователя по id. Возвращает сообщение об успешном удалении транзакции дохода пользователя."
+    )
     @DeleteMapping("/delete")
     public ResponseMessageAPI<String> delete(@RequestParam Long id) {
         try { return new ResponseMessageAPI<>(
@@ -133,9 +203,24 @@ public class IncomeController {
             );
         }
     }
-
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Транзакция дохода пользователя успешно обновлена",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = IncomeDto.class)
+                            )
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Обновление транзакции дохода пользователя по id транзакции",
+            description = "Обновление транзакции дохода пользователя по id. Возвращает обновленную транзакцию дохода пользователя в формате json."
+    )
     @PutMapping("/{id}/update")
-    public ResponseMessageAPI<IncomeDto> updateCategory(@PathVariable Long id,
+    public ResponseMessageAPI<IncomeDto> update(@PathVariable Long id,
                                @RequestBody IncomeDto model) {
         try { return new ResponseMessageAPI<>(
                 service.update(id, model),
