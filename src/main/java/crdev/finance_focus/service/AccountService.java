@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AccountService {
+
+     Account changeSave (Account account);
      Account save(AccountDto model);
      AccountDto create(AccountDto model);
      AccountDto info(Long id);

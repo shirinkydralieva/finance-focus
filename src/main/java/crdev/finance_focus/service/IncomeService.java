@@ -16,7 +16,7 @@ public interface IncomeService {
     String deleteById(Long id);
     IncomeDto getById(Long id);
     IncomeDto update(Long id, IncomeDto model);
-    List<IncomeDto> findByAccountIdAndDateBetween(Long accountId, Date startDate, Date endDate)
+    List<IncomeDto> findByAccountIdAndDateBetween(Long accountId, Date startDate, Date endDate);
 
 }
 

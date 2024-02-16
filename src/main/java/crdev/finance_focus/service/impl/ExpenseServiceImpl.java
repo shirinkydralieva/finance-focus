@@ -88,13 +88,18 @@ public class ExpenseServiceImpl implements ExpenseService {
         Expense expense = repo.findByIdAndDeletedDateIsNull(id).orElse(null);
         if (expense != null) {
             expense.setDeletedDate(new Date());
+
             Account account = accountService.findById(expense.getAccount().getId()).orElse(null);
             if (account != null){
+
                 if (account.getExpenses().contains(expense)) {
                     account.getExpenses().remove(expense);
                 }
                 Double newBalance = account.getBalance() + expense.getAmount();
                 account.setBalance(newBalance);
+                expense.setAccount(null);
+                repo.save(expense);
+                accountService.changeSave(account);
                 return "Expense deleted!";
             } else {
                 throw new EntityNotFoundException("Account not found");

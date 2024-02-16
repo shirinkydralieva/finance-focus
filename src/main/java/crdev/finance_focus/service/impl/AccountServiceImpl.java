@@ -22,6 +22,12 @@ import java.util.Optional;
 public class AccountServiceImpl implements AccountService {
     private final AccountRepo accountRepo;
     private final UserService userService;
+
+    @Override
+    public Account changeSave(Account account) {
+        return accountRepo.save(account);
+    }
+
     public Account save(AccountDto model) {
         Account account = new Account();
         account.setName(model.getName());
