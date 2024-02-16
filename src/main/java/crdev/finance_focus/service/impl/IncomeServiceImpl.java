@@ -90,6 +90,9 @@ public class IncomeServiceImpl implements IncomeService {
                 }
                 Double newBalance = account.getBalance() - income.getAmount();
                 account.setBalance(newBalance);
+                income.setAccount(null);
+                repo.save(income);
+                accountService.changeSave(account);
                 return "Income deleted!";
             } else {
                 throw new EntityNotFoundException("Account not found");
