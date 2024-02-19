@@ -2,6 +2,7 @@ package crdev.finance_focus.service.impl;
 
 import crdev.finance_focus.dto.CategoryDto;
 import crdev.finance_focus.entity.Category;
+import crdev.finance_focus.enums.TransactionType;
 import crdev.finance_focus.repo.CategoryRepo;
 import crdev.finance_focus.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryDto> getAll() {
-        List<Category> categories = repo.findAll();
+    public List<CategoryDto> getAllExpenseCategory() {
+        List<Category> categories = findAllByType(TransactionType.EXPENSE);
         List<CategoryDto> response = new ArrayList<>();
         for (Category category: categories){
             var model = categoryToDto(category);
@@ -40,10 +41,25 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public List<CategoryDto> getAllIncomeCategory() {
+        List<Category> categories = findAllByType(TransactionType.INCOME);
+        List<CategoryDto> response = new ArrayList<>();
+        for (Category category: categories){
+            var model = categoryToDto(category);
+            response.add(model);
+        }
+        return response;
+    }
+    @Override
     public CategoryDto categoryToDto(Category category) {
         var response = new CategoryDto();
         response.setId(category.getId());
         response.setName(category.getName());
         return response;
+    }
+
+    @Override
+    public List<Category> findAllByType(TransactionType type) {
+        return repo.findAllByType(type);
     }
 }

@@ -13,6 +13,10 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -174,6 +178,32 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new EntityNotFoundException("Account not found");
         }
         return expensesModel;
+    }
+
+    @Override
+    public List<ExpenseDto> findByAccountIdAndPeriod(Long accountId, String period) {
+        LocalDate now = LocalDate.now();//возвращает текущую дату в формате "yyyy-MM-dd"
+        LocalDate startDate;
+        LocalDate endDate;
+        switch (period) {
+            case "week":
+                startDate = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));//Можете глянуть как работают
+                endDate = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+                break;
+            case "month":
+                startDate = now.with(TemporalAdjusters.firstDayOfMonth());
+                endDate = now.with(TemporalAdjusters.lastDayOfMonth());
+                break;
+            case "year":
+                startDate = now.with(TemporalAdjusters.firstDayOfYear());
+                endDate = now.with(TemporalAdjusters.lastDayOfYear());
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid period: " + period);
+        }
+        Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date end = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return findByAccountIdAndDateBetween(accountId, start, end);
     }
 }
 

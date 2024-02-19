@@ -16,6 +16,7 @@ public interface ExpenseService {
     ExpenseDto getById(Long id);
     ExpenseDto update(Long id, ExpenseDto model);
     List<ExpenseDto> findByAccountIdAndDateBetween(Long accountId, Date startDate, Date endDate);
+    List<ExpenseDto> findByAccountIdAndPeriod(Long accountId, String period);
 }
 
 

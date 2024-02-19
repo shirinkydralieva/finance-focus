@@ -30,7 +30,7 @@ public class CategoryController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Получены все категории ",
+                    description = "Получены все категории для расходов",
                     content = {
                             @Content(mediaType = "application/json",
                                     array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class)))
@@ -39,13 +39,13 @@ public class CategoryController {
     }
     )
     @Operation(
-            summary = "Получение списка категорий",
-            description = "Возвращает список категорий для расходов/доходов в формате json."
+            summary = "Получение списка категорий(Для расходов)",
+            description = "Возвращает список категорий в формате json."
     )
-    @GetMapping
-    ResponseMessageAPI<List<CategoryDto>> getAll(){
+    @GetMapping("/expense")
+    ResponseMessageAPI<List<CategoryDto>> getAllExpenseCategory(){
         try { return new ResponseMessageAPI<>(
-                service.getAll(),
+                service.getAllExpenseCategory(),
                 ResultCodeAPI.SUCCESS,
                 null,
                 "success",
@@ -61,11 +61,55 @@ public class CategoryController {
                     ResultCode.NOT_FOUND.getHttpCode()
             );
         } catch (Exception e) {
-            System.out.printf("CategoryController: getAll() %s%n", e);
+            System.out.printf("CategoryController: getAllExpenseCategory() %s%n", e);
             return new ResponseMessageAPI<>(
                     null,
                     ResultCodeAPI.EXCEPTION, e.getClass().getSimpleName(),
-                    "Ошибка при получении списка категорий",
+                    "Ошибка при получении списка категорий для расходов",
+                    ResultCode.FAIL.getHttpCode()
+            );
+        }
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Получены все категории для доходов",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class)))
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Получение списка категорий(Для доходов)",
+            description = "Возвращает список категорий в формате json."
+    )
+    @GetMapping("/income")
+    ResponseMessageAPI<List<CategoryDto>> getAllIncomeCategory(){
+        try { return new ResponseMessageAPI<>(
+                service.getAllIncomeCategory(),
+                ResultCodeAPI.SUCCESS,
+                null,
+                "success",
+                ResultCode.OK.getHttpCode()
+        );
+        } catch (EntityNotFoundException exception) {
+            System.out.println(exception.getMessage());
+            return new ResponseMessageAPI<>(
+                    null,
+                    ResultCodeAPI.FAIL,
+                    exception.getClass().getSimpleName(),
+                    exception.getMessage(),
+                    ResultCode.NOT_FOUND.getHttpCode()
+            );
+        } catch (Exception e) {
+            System.out.printf("CategoryController: getAllIncomeCategory() %s%n", e);
+            return new ResponseMessageAPI<>(
+                    null,
+                    ResultCodeAPI.EXCEPTION, e.getClass().getSimpleName(),
+                    "Ошибка при получении списка категорий для доходов",
                     ResultCode.FAIL.getHttpCode()
             );
         }

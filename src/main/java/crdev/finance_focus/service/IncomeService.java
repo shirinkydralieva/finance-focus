@@ -17,7 +17,7 @@ public interface IncomeService {
     IncomeDto getById(Long id);
     IncomeDto update(Long id, IncomeDto model);
     List<IncomeDto> findByAccountIdAndDateBetween(Long accountId, Date startDate, Date endDate);
-
+    List<IncomeDto> findByAccountIdAndPeriod(Long accountId, String period);
 }
 
 

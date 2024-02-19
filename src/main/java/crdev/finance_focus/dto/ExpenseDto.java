@@ -16,5 +16,4 @@ public class ExpenseDto {
     private Date date;
     private Date deletedDate;
     private Long accountId;
-
 }

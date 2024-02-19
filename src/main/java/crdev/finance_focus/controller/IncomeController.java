@@ -298,6 +298,51 @@ public class IncomeController {
             );
         }
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Получены все транзакции доходов пользователя по id счета/кошелька пользователя и по заданному периоду времени",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = IncomeDto.class)))
+                    }
+            )
+    }
+    )
+    @Operation(
+            summary = "Получение всех транзакций доходов пользователя по id счета/кошелька пользователя и заданному периоду времени(конкретно неделя, месяц, год)",
+            description = "Выберите период (week, month, year), также id счета/кошелька. Возвращает список транзакций расходов пользователя в формате json."
+    )
+    @GetMapping("/{period}")
+    public ResponseMessageAPI<List<IncomeDto>> findByAccountIdAndPeriod(@RequestParam Long accountId, @PathVariable String period){
+        try {
+            return new ResponseMessageAPI<>(
+                    service.findByAccountIdAndPeriod(accountId, period),
+                    ResultCodeAPI.SUCCESS,
+                    null,
+                    "success",
+                    ResultCode.OK.getHttpCode()
+            );
+        } catch (EntityNotFoundException exception) {
+            System.out.println(exception.getMessage());
+            return new ResponseMessageAPI<>(
+                    null,
+                    ResultCodeAPI.FAIL,
+                    exception.getClass().getSimpleName(),
+                    exception.getMessage(),
+                    ResultCode.NOT_FOUND.getHttpCode()
+            );
+        } catch (Exception e) {
+            System.out.printf("IncomeController: findByAccountIdAndPeriod() %s%n", e);
+            return new ResponseMessageAPI<>(
+                    null,
+                    ResultCodeAPI.EXCEPTION, e.getClass().getSimpleName(),
+                    "Ошибка при получении списка доходов пользователя по периоду(week, month, year)",
+                    ResultCode.FAIL.getHttpCode()
+            );
+        }
+    }
 }
 
 
